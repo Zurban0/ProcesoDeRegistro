@@ -24,9 +24,21 @@ if (isset($_POST['user']))
   {
       // TODO Esta la consulta de base de datos correspondiente para verificar si el usuario existe
       $sql = "SELECT user, pass FROM members";
-      $result = queryMySQL($sql);
 
-    if ($result->num_rows == 0)
+      $result = queryMySQL($sql);
+      $resultado = False;
+      while ($fila =mysqli_fetch_row($result)) {
+            if (!$resultado){
+                if (strcmp($fila[0], $user) == 0){
+                    if (strcmp($fila[1], $pass) == 0){
+                        $resultado = True;
+                    }
+                }
+            }
+        }
+
+
+    if ($resultado == False)
     {
       $error = "<span class='error'>Email/Contraseña invalida</span><br><br>";
     }
@@ -35,7 +47,9 @@ if (isset($_POST['user']))
       // TODO Realiza la gestión de la sesión de usuario:
       // Almacena en la variables de sesión user el valore de $user
       //
-      $user = $_SESSION['user'];
+              
+      session_start();
+      $_SESSION['user'] = $user; 
       // Control de vida de la sesión antes de que expire
       if (!isset($_SESSION['CREATED'])) {
         $_SESSION['CREATED'] = time();
@@ -85,7 +99,7 @@ else if (isset($_SESSION['user'])){
               <div class="col-md-3">
                   <div class="form-control-feedback">
                       <span class="text-danger align-middle">
-                          <i class="fa fa-close"></i> <?php  //TODO Muestra el mensaje de error  ?>
+                          <i class="fa fa-close"></i> <?php echo $error; //TODO Muestra el mensaje de error  ?>
                       </span>
                   </div>
               </div>
@@ -105,7 +119,7 @@ else if (isset($_SESSION['user'])){
               <div class="col-md-3">
                   <div class="form-control-feedback">
                       <span class="text-danger align-middle">
-                     <?php // TODO Muestra el mensaje de error ?>
+                     <?php echo $error; // TODO Muestra el mensaje de error ?>
                       </span>
                   </div>
               </div>
